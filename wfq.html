@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五方旗</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --card-bg: rgba(10, 10, 10, 0.95);
+            --gold: #c5a059;
+            --blue: #2563eb;
+            --white: #ffffff;
+            --red: #dc2626;
+            --green: #10b981;
+            --yellow: #fbbf24;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            color: #dcdcdc;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            height: 100vh; width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 修复：星空画布彻底铺满 */
+        #stars-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            color: var(--gold);
+            font-family: "SimSun", "STSong", serif;
+            font-size: 2.8rem;
+            letter-spacing: 1.2rem;
+            margin: 0 0 30px 0;
+            font-weight: 900;
+            text-indent: 1.2rem;
+            z-index: 10;
+        }
+
+        .nav { display: flex; gap: 40px; margin-bottom: 4vh; z-index: 10; }
+        .nav-item {
+            background: none; border: none; color: #444; font-size: 1rem;
+            cursor: pointer; padding: 5px 0; transition: 0.3s; letter-spacing: 3px;
+        }
+        .nav-item.active { color: var(--gold); border-bottom: 2px solid var(--gold); font-weight: bold; }
+
+        .stage { display: flex; gap: 30px; margin-bottom: 40px; height: 170px; z-index: 10; }
+        .flag-box {
+            width: 100px; height: 165px; background: rgba(20, 20, 20, 0.9);
+            border-radius: 3px; border: 1px solid #333; transition: 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .flag-box.glow { box-shadow: 0 0 45px currentColor; border: none; }
+        .shuffling { animation: flash 0.1s infinite; }
+
+        @keyframes flash {
+            0% { background: var(--blue); } 25% { background: var(--white); }
+            50% { background: var(--red); } 75% { background: var(--green); } 100% { background: var(--yellow); }
+        }
+
+        /* 圆形按钮 */
+        .btn-draw {
+            width: 90px; height: 90px;
+            background: var(--gold); color: #000; border: none;
+            font-size: 1.1rem; font-weight: bold;
+            border-radius: 50%; cursor: pointer; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 2px;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            padding: 0;
+        }
+        .btn-draw:hover { transform: scale(1.1); box-shadow: 0 0 35px rgba(197, 160, 89, 0.7); }
+        .btn-draw:active { transform: scale(0.95); }
+        .btn-draw:disabled { background: #222; color: #444; box-shadow: none; cursor: default; }
+
+        .result-panel {
+            margin-top: 30px; width: 90%; max-width: 500px;
+            background: var(--card-bg); padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px);
+            opacity: 0; transform: translateY(15px); transition: 0.6s;
+            visibility: hidden; text-align: left; z-index: 10;
+            overflow-y: auto; max-height: 40vh;
+        }
+        .result-panel.active { opacity: 1; transform: translateY(0); visibility: visible; }
+
+        .res-head { color: var(--gold); font-size: 1.3rem; margin-bottom: 12px; border-bottom: 1px solid #222; padding-bottom: 8px; font-weight: bold; }
+        .res-grade { font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: 3px; }
+        .res-meta { font-size: 0.85rem; color: #777; line-height: 1.5; margin-bottom: 15px; white-space: pre-line; }
+        .res-body { line-height: 1.8; font-size: 1rem; color: #bbb; }
+        .label-title { color: var(--gold); font-weight: bold; margin-top: 15px; display: block; font-size: 0.9rem; letter-spacing: 1px; }
+        .combo-text { font-size: 1.15rem; line-height: 1.8; color: #eee; border-top: 1px solid #222; padding-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <canvas id="stars-canvas"></canvas>
+    <h1>五方旗</h1>
+
+    <div class="nav">
+        <button id="tab-single" class="nav-item active" onclick="setMode('single')">单抽</button>
+        <button id="tab-double" class="nav-item" onclick="setMode('double')">双抽</button>
+    </div>
+
+    <div class="stage">
+        <div id="f1" class="flag-box"></div>
+        <div id="f2" class="flag-box" style="display: none;"></div>
+    </div>
+
+    <button id="drawBtn" class="btn-draw" onclick="startDraw()">摇旗</button>
+
+    <div id="panel" class="result-panel">
+        <div id="resTitle" class="res-head"></div>
+        <div id="resGrade" class="res-grade"></div>
+        <div id="resMeta" class="res-meta"></div>
+        <div id="resBody" class="res-body"></div>
+    </div>
+
+<script>
+    // 星空全屏逻辑
+    const canvas = document.getElementById('stars-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initStars();
+    }
+
+    function initStars() {
+        stars = [];
+        const count = Math.floor((canvas.width * canvas.height) / 3000); // 根据面积动态计算数量
+        for (let i = 0; i < count; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 1.5,
+                opacity: Math.random(),
+                speed: 0.005 + Math.random() * 0.01
+            });
+        }
+    }
+
+    function drawStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+            ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            ctx.fill();
+            s.opacity += s.speed;
+            if (s.opacity > 0.9 || s.opacity < 0.1) s.speed = -s.speed;
+        });
+        requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    drawStars();
+
+    const FLAG_DB = {
+        blue: { 
+            name: '青 / 蓝旗', title: '东方青帝神将', 
+            meta: '灵体：青龙、将军神、神将、龙王、年轻男神\n方位：东方 | 数字：3, 8 | 五行：木',
+            pos: '考试合格、合同成功、文书运好、就业成功、事业扩张、宅基大监、福大监、将军神在前相助。', 
+            neg: '官司、口舌、是非、意外、厄运、受阻。',
+            color: '#2563eb' 
+        },
+        white: { 
+            name: '白旗', title: '西方白帝神将', 
+            meta: '灵体：白虎、七星、四神、帝释、天神、祖先神\n方位：西方 | 数字：4, 9 | 五行：金',
+            pos: '神助、祖先帮助、清净、纯明。郁结之事借神之愿力被引导、化解。', 
+            color: '#ffffff' 
+        },
+        red: { 
+            name: '红旗', title: '南方赤帝神将', 
+            meta: '灵体：朱雀、山神\n方位：南方 | 数字：2, 7 | 五行：火',
+            pos: '心愿达成、好运、金钱、吉利、万事亨通。被视为最好的旗。', 
+            color: '#dc2626' 
+        },
+        green: { 
+            name: '浅绿色旗', title: '北方黑帝神将', 
+            meta: '灵体：玄武、城隍神、童子灵、亡祖、水鬼、年轻女神\n方位：北方 | 数字：1, 6 | 五行：水',
+            neg: '厄运、疾病、丧门、不净、失败、离别、极度压抑之境。通常表示有不吉之气进入。', 
+            color: '#10b981' 
+        },
+        yellow: { 
+            name: '黄旗', title: '中央黄帝神将', 
+            meta: '灵体：黄龙、大母神、奶奶神、祖先神\n方位：中央 | 数字：5, 10 | 五行：土',
+            pos: '金钱、买卖成交、根基、祖先相助、供奉祖先可化为财运、神兴之气。',
+            neg: '祖先阻挡、祖先事宜、纷乱之象。',
+            color: '#fbbf24' 
+        }
+    };
+
+    const COMBO_DB = {
+        'red-red': ['大吉', '好运爆发，心愿极速推进 / 忌焦躁，顺势而为'],
+        'red-white': ['上吉', '神力加持，万事顺遂 / 必成之象，清净圆满'],
+        'red-yellow': ['上吉', '祖先助运，财源提升 / 适合求财、求事业'],
+        'blue-red': ['中吉', '功名利禄，事业良机 / 适合文书、签约、升职'],
+        'green-red': ['中', '好运带阻，干扰潜伏 / 稳扎稳打，防患未然'],
+        'white-white': ['平吉', '强力护佑，清净安稳 / 适合祈福、化解纠纷'],
+        'white-yellow': ['中吉', '家族福荫，根基稳固 / 适合求安稳、处理家事'],
+        'blue-white': ['中吉', '变动顺遂，贵人指引 / 适合迁移、调动、远行'],
+        'green-white': ['中', '险中有救，神明保后 / 宜守不宜攻，待时而动'],
+        'yellow-yellow': ['中吉', '根基深厚，祖先关照 / 财运稳健，利于买卖'],
+        'blue-yellow': ['中', '事业损益与家族相关 / 详察合同文书，谨防干扰'],
+        'green-yellow': ['凶', '根基受损，气场混杂 / 需处理健康问题与家族矛盾'],
+        'blue-blue': ['中吉', '事业极强，文书事显 / 专注当下，成败在于细节'],
+        'blue-green': ['凶', '事业受阻，是非缠身 / 防范口舌官非，暂缓合同'],
+        'green-green': ['大凶', '极度低迷，气场受损 / 忌一切重大决策']
+    };
+
+    let mode = 'single';
+    const keys = ['blue', 'white', 'red', 'green', 'yellow'];
+
+    function setMode(m) {
+        mode = m;
+        document.getElementById('tab-single').classList.toggle('active', m === 'single');
+        document.getElementById('tab-double').classList.toggle('active', m === 'double');
+        document.getElementById('f2').style.display = (m === 'double') ? 'flex' : 'none';
+        resetUI();
+    }
+
+    function resetUI() {
+        document.getElementById('panel').classList.remove('active');
+        document.querySelectorAll('.flag-box').forEach(el => {
+            el.className = 'flag-box';
+            el.style.cssText = (el.id === 'f2' && mode === 'single') ? 'display:none' : '';
+        });
+    }
+
+    function startDraw() {
+        resetUI();
+        const btn = document.getElementById('drawBtn');
+        btn.disabled = true;
+        const f1 = document.getElementById('f1');
+        const f2 = document.getElementById('f2');
+        f1.className = 'flag-box shuffling';
+        if(mode === 'double') f2.className = 'flag-box shuffling';
+
+        setTimeout(() => {
+            const r1 = keys[Math.floor(Math.random()*5)];
+            applyStyle(f1, r1);
+            if(mode === 'double') {
+                setTimeout(() => {
+                    const r2 = keys[Math.floor(Math.random()*5)];
+                    applyStyle(f2, r2);
+                    render(r1, r2);
+                    btn.disabled = false;
+                }, 400);
+            } else {
+                render(r1);
+                btn.disabled = false;
+            }
+        }, 1000);
+    }
+
+    function applyStyle(el, key) {
+        const color = FLAG_DB[key].color;
+        el.className = 'flag-box glow';
+        el.style.backgroundColor = color;
+        el.style.color = color;
+        if(key === 'white') el.style.border = '1px solid #444';
+    }
+
+    function render(r1, r2) {
+        const title = document.getElementById('resTitle');
+        const grade = document.getElementById('resGrade');
+        const meta = document.getElementById('resMeta');
+        const body = document.getElementById('resBody');
+        const panel = document.getElementById('panel');
+
+        if (!r2) {
+            const d = FLAG_DB[r1];
+            title.innerText = d.name;
+            grade.innerText = d.title;
+            meta.innerText = d.meta;
+            let html = "";
+            if (d.pos) html += `<span class="label-title">正面含义</span>${d.pos}`;
+            if (d.neg) html += `<span class="label-title">负面含义</span>${d.neg}`;
+            body.innerHTML = html;
+        } else {
+            const comboKey = [r1, r2].sort().join('-');
+            const data = COMBO_DB[comboKey];
+            title.innerText = "双旗解读";
+            grade.innerText = data[0];
+            meta.innerText = "";
+            body.innerHTML = `<div class="combo-text">${data[1]}</div>`;
+        }
+        panel.classList.add('active');
+    }
+</script>
+</body>
+</html>
