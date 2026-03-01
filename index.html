@@ -8,63 +8,49 @@
         :root { --bg: #000000; --gold: #c5a059; }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
         
-        /* 1. 取消整体居中，改为向上对齐 */
         body, html { margin: 0; padding: 0; background: var(--bg); color: #dcdcdc; height: 100%; width: 100%; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-        
         #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         
-        /* 2. 容器满高，留出顶底安全距离 */
-        .ui-wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; height: 100%; padding-top: 6vh; padding-bottom: 75px; }
+        /* 1. 顶部间距压缩 */
+        .ui-wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; height: 100%; padding-top: 3vh; padding-bottom: 70px; }
         
-        /* 3. 标题加粗 */
-        h1 { color: var(--gold); font-size: 3.2rem; letter-spacing: 0.8rem; margin: 0; font-weight: bold; text-indent: 0.8rem; font-family: "Times New Roman", serif; text-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
-        .intro-text { color: rgba(197, 160, 89, 0.6); font-size: 0.95rem; margin: 15px 0 25px 0; letter-spacing: 2.5px; flex-shrink: 0; }
+        /* 2. 标题与引导语压缩 */
+        h1 { color: var(--gold); font-size: 2.8rem; letter-spacing: 0.6rem; margin: 0; font-weight: bold; text-indent: 0.6rem; font-family: "Times New Roman", serif; text-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
+        .intro-text { color: rgba(197, 160, 89, 0.6); font-size: 0.85rem; margin: 8px 0 15px 0; letter-spacing: 2px; flex-shrink: 0; }
         
-        .nav { display: flex; gap: 30px; margin-bottom: 25px; flex-shrink: 0; }
-        .nav-item { background: none; border: none; color: #444; font-size: 1.05rem; cursor: pointer; padding: 5px 12px; transition: 0.3s; letter-spacing: 2px; }
+        .nav { display: flex; gap: 20px; margin-bottom: 15px; flex-shrink: 0; }
+        .nav-item { background: none; border: none; color: #444; font-size: 0.95rem; cursor: pointer; padding: 4px 10px; transition: 0.3s; letter-spacing: 1px; }
         .nav-item.active { color: var(--gold); border-bottom: 2px solid var(--gold); font-weight: bold; }
         
-        .stage { display: flex; gap: 20px; margin-bottom: 25px; height: 150px; flex-shrink: 0; }
-        .flag-box { width: 90px; height: 150px; background: rgba(20, 20, 20, 0.95); border-radius: 4px; border: 1px solid #222; transition: 0.6s cubic-bezier(0.2, 1, 0.3, 1); }
-        .flag-box.glow { box-shadow: 0 0 40px currentColor; border: none; }
+        /* 3. 旗帜小型化：高度从 150px 降至 110px */
+        .stage { display: flex; gap: 15px; margin-bottom: 15px; height: 110px; flex-shrink: 0; }
+        .flag-box { width: 70px; height: 110px; background: rgba(20, 20, 20, 0.95); border-radius: 4px; border: 1px solid #222; transition: 0.6s cubic-bezier(0.2, 1, 0.3, 1); }
+        .flag-box.glow { box-shadow: 0 0 30px currentColor; border: none; }
+        
         .shuffling { animation: flash 0.12s infinite; }
         @keyframes flash { 0% { background: #2563eb; } 25% { background: #fff; } 50% { background: #dc2626; } 75% { background: #10b981; } 100% { background: #fbbf24; } }
         
-        .btn-draw { width: 85px; height: 85px; background: var(--gold); color: #000; border: none; font-size: 1.15rem; font-weight: bold; border-radius: 50%; cursor: pointer; box-shadow: 0 0 25px rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; flex-shrink: 0; }
+        /* 4. 按钮小型化：直径从 85px 降至 70px */
+        .btn-draw { width: 70px; height: 70px; background: var(--gold); color: #000; border: none; font-size: 1rem; font-weight: bold; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px rgba(197,160,89,0.3); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; flex-shrink: 0; }
         .btn-draw:active { transform: scale(0.9); }
         
-        /* 4. 面板弹性填充：不再写死高度，自动占满剩余空间 */
-        .result-panel { margin-top: 25px; margin-bottom: 10px; width: 90%; max-width: 480px; background: rgba(15, 15, 15, 0.96); padding: 22px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; opacity: 0; visibility: hidden; transform: translateY(15px); transition: 0.5s ease; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch; }
+        /* 5. 结果面板自动填充剩余空间 */
+        .result-panel { margin-top: 15px; margin-bottom: 5px; width: 92%; max-width: 480px; background: rgba(15, 15, 15, 0.96); padding: 18px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.5s ease; overflow-y: auto; flex: 1; min-height: 0; -webkit-overflow-scrolling: touch; }
         .result-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .result-panel::-webkit-scrollbar { width: 4px; }
+        .result-panel::-webkit-scrollbar { width: 3px; }
         .result-panel::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
         
-        .res-head { color: var(--gold); font-size: 1.15rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: baseline; flex-shrink: 0; }
-        .res-grade { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: 2px; flex-shrink: 0; }
-        .res-body { line-height: 1.8; font-size: 0.95rem; color: #ccc; white-space: pre-line; }
+        .res-head { color: var(--gold); font-size: 1.05rem; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: baseline; }
+        .res-grade { font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: 8px; letter-spacing: 1px; }
+        .res-body { line-height: 1.6; font-size: 0.9rem; color: #ccc; white-space: pre-line; }
 
-        /* 5. 底部固定：增加防遮挡背景与苹果安全区适配 */
         .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            z-index: 20;
-            pointer-events: none;
-            line-height: 1.5;
-            padding-bottom: calc(15px + env(safe-area-inset-bottom));
-            padding-top: 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%);
+            position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.7rem; letter-spacing: 1px; z-index: 20; pointer-events: none; line-height: 1.4; padding-bottom: calc(10px + env(safe-area-inset-bottom)); padding-top: 15px; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0) 100%);
         }
     </style>
 </head>
 <body>
     <canvas id="stars-canvas"></canvas>
-    
     <div class="ui-wrapper">
         <h1>赛博神占</h1>
         <div class="intro-text">默念你的问题，摇旗得到指引</div>
@@ -83,10 +69,10 @@
             <div id="resBody" class="res-body"></div>
         </div>
     </div>
-
     <div class="footer">注意：该网站由LUA基于朝鲜半岛巫俗设计并免费公开。<br>请勿商用、仅供娱乐、请勿迷信。</div>
 
 <script>
+    // 逻辑部分保持不变
     var canvas = document.getElementById('stars-canvas'), ctx = canvas.getContext('2d'), stars = [];
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initStars(); }
     function initStars() { stars = []; var count = Math.floor((canvas.width*canvas.height)/3000); for(var i=0; i<count; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, size:Math.random()*1.8, opacity:Math.random(), speed:0.005+Math.random()*0.015}); }
@@ -94,72 +80,53 @@
     window.addEventListener('resize', resize); resize(); draw();
 
     var mode = 'single', keys = ['blue','white','red','green','yellow'];
-    
     var FLAG_DB = {
         blue: { name:'蓝旗', grade:'次凶', title:'东方青帝神将之旗', body:'代表灵体：青龙、将军神、神将、大监、龙王、年轻男神\n方位：东方 | 数字：3、8 | 五行：木\n\n【含义】\n在考试、合同、文书、事业、宅基类问题中为吉。\n在其他问题中不吉，可再占一次确认。', color:'#2563eb' },
-        white: { name:'白旗', grade:'次吉', title:'西方白帝神将之旗', body:'代表灵体：白虎、七星、四神、帝释、天神、祖先神\n方位：西方 | 数字：4、9 | 五行：金\n\n【含义】\n天神帮助、清净、纯明。\n有相关信仰者建议向神发愿，让问题化解；若已经得助，可感恩神明。', color:'#fff' },
-        red: { name:'红旗', grade:'吉', title:'南方赤帝神将之旗', body:'代表灵体：朱雀、山神\n方位：南方 | 数字：2、7 | 五行：火\n\n【含义】\n心愿达成、好运、金钱、吉利、万事亨通。\n但若过于频繁抽到，说明不要心急，并防范血光和火灾问题。', color:'#dc2626' },
-        green: { name:'绿旗', grade:'凶', title:'北方黑帝神将之旗', body:'代表灵体：玄武、城隍神、童子灵、年轻亡灵、虚主、杂神、亡祖、水鬼、年轻女神\n方位：北方 | 数字：1、6 | 五行：水\n\n【含义】\n厄运、疾病、丧门、不净、失败、离别、落选、丧事、极度压抑之境。', color:'#10b981' },
-        yellow: { name:'黄旗', grade:'中', title:'中央黄帝神将之旗', body:'代表灵体：黄龙、大母神、奶奶神、祖先神\n方位：中央 | 数字：5、10 | 五行：土\n\n【含义】\n金钱、买卖方面为吉。\n在祖先方面，若祖先事宜处理妥当则吉，处理存在问题则可能带来是非和阻碍。', color:'#fbbf24' }
+        white: { name:'白旗', grade:'次吉', title:'西方白帝神将之旗', body:'代表灵体：白虎、七星、四神、帝释、天神、祖先神\n方位：西方 | 数字：4、9 | 五行：金\n\n【含义】\n天神帮助、清净、纯明。\n有信仰者建议发愿化解；若已得助，可感恩。', color:'#fff' },
+        red: { name:'红旗', grade:'吉', title:'南方赤帝神将之旗', body:'代表灵体：朱雀、山神\n方位：南方 | 数字：2、7 | 五行：火\n\n【含义】\n心愿达成、好运、金钱、亨通。\n若频抽到则莫急，防血光火灾。', color:'#dc2626' },
+        green: { name:'绿旗', grade:'凶', title:'北方黑帝神将之旗', body:'代表灵体：玄武、城隍、童子亡灵、杂神、水鬼、年轻女神\n方位：北方 | 数字：1、6 | 五行：水\n\n【含义】\n厄运、疾病、不净、失败、离别、极度压抑之境。', color:'#10b981' },
+        yellow: { name:'黄旗', grade:'中', title:'中央黄帝神将之旗', body:'代表灵体：黄龙、大母神、奶奶神、祖先神\n方位：中央 | 数字：5、10 | 五行：土\n\n【含义】\n金钱买卖为吉。\n祖先事宜妥当则吉，否则可能带来是非阻碍。', color:'#fbbf24' }
     };
-
     var COMBO_DB = { 
-        'red-white': ['大吉', '运势极佳 / 想说出口的话是对的 / 神灵赐福'],
+        'red-white': ['大吉', '运势极佳 / 想说的话是对的 / 神灵赐福'],
         'red-yellow': ['吉', '财运亨通 / 祖先相助'],
-        'blue-red': ['吉', '把握学习、事业、合同、文书之事的好机会'],
-        'green-red': ['中', '事情有所阻碍和延迟但终究能处理完 / 需要注意西南方位'],
+        'blue-red': ['吉', '把握学习、事业、合同、文书的好机会'],
+        'green-red': ['中', '有所阻碍但终能处理完 / 注意西南方位'],
         'white-yellow': ['吉', '有神的气息或痕迹出现'],
         'blue-white': ['中', '有移动、变动的迹象'],
         'green-white': ['凶', '被神惩罚 / 受神所阻'],
         'blue-yellow': ['凶', '运势有阻 / 注意金钱问题'],
-        'green-yellow': ['凶', '注意祖先事宜 / 阻滞、郁闷、烦恼、矛盾'],
+        'green-yellow': ['凶', '注意祖先事宜 / 阻滞、矛盾'],
         'blue-green': ['大凶', '四方受阻，诸事难成']
     };
 
     function setMode(m) { mode = m; document.getElementById('tab-single').className = 'nav-item '+(m=='single'?'active':''); document.getElementById('tab-double').className = 'nav-item '+(m=='double'?'active':''); document.getElementById('f2').style.display = (m=='double'?'block':'none'); resetUI(); }
     function resetUI() { document.getElementById('panel').className = 'result-panel'; document.getElementById('f1').className = 'flag-box'; document.getElementById('f2').className = 'flag-box'; }
-    
     function startDraw() {
         var btn = document.getElementById('drawBtn'); btn.disabled = true; resetUI();
         document.getElementById('f1').className = 'flag-box shuffling';
         if(mode=='double') document.getElementById('f2').className = 'flag-box shuffling';
-        
         setTimeout(function(){
             var r1 = keys[Math.floor(Math.random()*5)];
             apply('f1', r1);
-            
             if(mode=='double') {
                 setTimeout(function(){
                     var r2 = keys[Math.floor(Math.random()*5)];
-                    while(r2 === r1) {
-                        r2 = keys[Math.floor(Math.random()*5)];
-                    }
-                    apply('f2', r2); 
-                    render(r1, r2); 
-                    btn.disabled = false;
+                    while(r2 === r1) r2 = keys[Math.floor(Math.random()*5)];
+                    apply('f2', r2); render(r1, r2); btn.disabled = false;
                 }, 400);
-            } else { 
-                render(r1); 
-                btn.disabled = false; 
-            }
+            } else { render(r1); btn.disabled = false; }
         }, 1000);
     }
-    
     function apply(id, k) { var el = document.getElementById(id); el.className = 'flag-box glow'; el.style.backgroundColor = FLAG_DB[k].color; el.style.color = FLAG_DB[k].color; if(k=='white') el.style.border='1px solid #666'; }
-    
     function render(r1, r2) {
         var t = document.getElementById('resTitle'), g = document.getElementById('resGrade'), b = document.getElementById('resBody');
         if(!r2) { 
-            var d = FLAG_DB[r1]; 
-            t.innerHTML = `<span>${d.name}</span> <span style="font-size:1rem; opacity:0.8;">[ ${d.grade} ]</span>`; 
-            g.innerText = d.title; 
-            b.innerText = d.body; 
+            var d = FLAG_DB[r1]; t.innerHTML = `<span>${d.name}</span> <span style="font-size:0.9rem; opacity:0.8;">[${d.grade}]</span>`; 
+            g.innerText = d.title; b.innerText = d.body; 
         } else { 
-            var k = [r1,r2].sort().join('-'); 
-            var res = COMBO_DB[k]; 
-            t.innerText = "双旗指引"; 
-            g.innerText = res[0]; 
-            b.innerText = res[1]; 
+            var k = [r1,r2].sort().join('-'); var res = COMBO_DB[k]; 
+            t.innerText = "双旗指引"; g.innerText = res[0]; b.innerText = res[1]; 
         }
         document.getElementById('panel').className = 'result-panel active';
     }
