@@ -11,7 +11,7 @@
         body, html { margin: 0; padding: 0; background: var(--bg); color: #dcdcdc; height: 100%; width: 100%; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
         #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         
-        .ui-wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; height: 100%; padding-top: 3vh; padding-bottom: 70px; }
+        .ui-wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; height: 100%; padding-top: 3vh; padding-bottom: 80px; }
         
         h1 { color: var(--gold); font-size: 2.8rem; letter-spacing: 0.6rem; margin: 0; font-weight: bold; text-indent: 0.6rem; font-family: "Times New Roman", serif; text-shadow: 0 0 15px rgba(197, 160, 89, 0.4); }
         .intro-text { color: rgba(197, 160, 89, 0.6); font-size: 0.85rem; margin: 8px 0 15px 0; letter-spacing: 2px; flex-shrink: 0; }
@@ -42,8 +42,9 @@
         .highlight-text { color: var(--gold); font-weight: 500; }
         .meta-line { color: rgba(255, 255, 255, 0.2); font-size: 0.85rem; margin-top: 15px; border-top: 1px solid #222; padding-top: 10px; }
 
+        /* 底部声明排版 */
         .footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.7rem; letter-spacing: 1px; z-index: 20; pointer-events: none; line-height: 1.4; padding-bottom: calc(10px + env(safe-area-inset-bottom)); padding-top: 15px; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0) 100%);
+            position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; color: rgba(255, 255, 255, 0.25); font-size: 0.65rem; letter-spacing: 1px; z-index: 20; pointer-events: none; line-height: 1.6; padding-bottom: calc(12px + env(safe-area-inset-bottom)); padding-top: 15px; background: linear-gradient(to top, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0) 100%);
         }
     </style>
 </head>
@@ -67,7 +68,10 @@
             <div id="resBody" class="res-body"></div>
         </div>
     </div>
-    <div class="footer">注意：该网站由LUA基于朝鲜半岛巫俗设计并免费公开。<br>请勿商用、仅供娱乐、请勿迷信。</div>
+    <div class="footer">
+        · 该网站由LUA基于朝鲜半岛巫俗设计 ·<br>
+        · 请勿商用 仅供娱乐 请勿迷信 ·
+    </div>
 
 <script>
     var canvas = document.getElementById('stars-canvas'), ctx = canvas.getContext('2d'), stars = [];
@@ -81,7 +85,7 @@
     var FLAG_DB = {
         blue: { name:'蓝旗', grade:'次凶', title:'东方青帝神将之旗', meaning:'在考试、合同、文书、事业、宅基类问题中为吉。 在其他问题中不吉，可再占一次确认。', spirit:'青龙、将军神、神将、大监、龙王、年轻男神', meta:'方位：东方 | 数字：3、8 | 五行：木', color:'#2563eb' },
         white: { name:'白旗', grade:'次吉', title:'西方白帝神将之旗', meaning:'天神帮助、清净、纯明。 有相关信仰者建议向神发愿，让问题化解；若已经得助，可感恩神明。', spirit:'白虎、七星、四神、帝释、天神、祖先神', meta:'方位：西方 | 数字：4、9 | 五行：金', color:'#fff' },
-        red: { name:'红旗', grade:'吉', title:'南方赤帝神将之旗', meaning:'心愿达成、好运、金钱、吉利、万事亨通。 但若过于频繁抽到，说明不要心急，并防范血光和火灾问题。', spirit:'朱雀、山神', meta:'南方 | 数字：2、7 | 五行：火', color:'#dc2626' },
+        red: { name:'红旗', grade:'吉', title:'南方赤帝神将之旗', meaning:'心愿达成、好运、金钱、吉利、万事亨通。 但若过于频繁抽到，说明不要心急，并防范血光和火灾问题。', spirit:'朱雀、山神', meta:'方位：南方 | 数字：2、7 | 五行：火', color:'#dc2626' },
         green: { name:'绿旗', grade:'凶', title:'北方黑帝神将之旗', meaning:'厄运、疾病、丧门、不净、失败、离别、落选、丧事、极度压抑之境。', spirit:'玄武、城隍神、童子灵、年轻亡灵、虚主、杂神、亡祖、水鬼、年轻女神', meta:'方位：北方 | 数字：1、6 | 五行：水', color:'#10b981' },
         yellow: { name:'黄旗', grade:'中', title:'中央黄帝神将之旗', meaning:'金钱、买卖方面为吉。 在祖先方面，若祖先事宜处理妥当则吉，处理存在问题则可能带来是非和阻碍。', spirit:'黄龙、大母神、奶奶神、祖先神', meta:'方位：中央 | 数字：5、10 | 五行：土', color:'#fbbf24' }
     };
@@ -91,7 +95,7 @@
         'red-yellow': ['吉', '财运亨通/祖先相助'],
         'blue-red': ['吉', '把握学习、事业、合同、文书之事的好机会'],
         'green-red': ['中', '事情有所阻碍和延迟但终究能处理完/需要注意西南方位'],
-        'white-yellow': ['吉', '有神的气息和痕迹出现'],
+        'white-yellow': ['吉', '有神的气息或痕迹出现'],
         'blue-white': ['中', '有移动、变动的迹象'],
         'green-white': ['凶', '被神惩罚/受神所阻'],
         'blue-yellow': ['凶', '运势有阻/注意金钱问题'],
@@ -129,7 +133,6 @@
         } else { 
             var comboKey = [r1, r2].sort().join('-');
             var res = COMBO_DB[comboKey];
-            // 修改这里：标题直接显示旗帜颜色组合
             t.innerText = `${FLAG_DB[r1].name} & ${FLAG_DB[r2].name}`;
             g.innerText = res[0]; 
             b.innerHTML = `<span class="highlight-text">【含义】${res[1]}</span>`; 
