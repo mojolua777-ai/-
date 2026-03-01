@@ -2,309 +2,164 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>五方旗</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>赛博神占</title>
     <style>
-        :root {
-            --bg: #000000;
-            --card-bg: rgba(10, 10, 10, 0.95);
-            --gold: #c5a059;
-            --blue: #2563eb;
-            --white: #ffffff;
-            --red: #dc2626;
-            --green: #10b981;
-            --yellow: #fbbf24;
-        }
-
-        body, html {
-            margin: 0; padding: 0;
-            background-color: var(--bg);
-            color: #dcdcdc;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-            height: 100vh; width: 100vw;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* 修复：星空画布彻底铺满 */
-        #stars-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        h1 {
-            color: var(--gold);
-            font-family: "SimSun", "STSong", serif;
-            font-size: 2.8rem;
-            letter-spacing: 1.2rem;
-            margin: 0 0 30px 0;
-            font-weight: 900;
-            text-indent: 1.2rem;
-            z-index: 10;
-        }
-
-        .nav { display: flex; gap: 40px; margin-bottom: 4vh; z-index: 10; }
-        .nav-item {
-            background: none; border: none; color: #444; font-size: 1rem;
-            cursor: pointer; padding: 5px 0; transition: 0.3s; letter-spacing: 3px;
-        }
+        :root { --bg: #000000; --gold: #c5a059; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #dcdcdc; height: 100%; width: 100%; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        
+        .ui-wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding-top: 10px; }
+        
+        /* 标题修改 */
+        h1 { color: var(--gold); font-size: 3.2rem; letter-spacing: 0.8rem; margin: 0; font-weight: 300; text-indent: 0.8rem; font-family: "Times New Roman", serif; text-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
+        .intro-text { color: rgba(197, 160, 89, 0.6); font-size: 0.95rem; margin: 15px 0 30px 0; letter-spacing: 2.5px; }
+        
+        .nav { display: flex; gap: 30px; margin-bottom: 25px; }
+        .nav-item { background: none; border: none; color: #444; font-size: 1.05rem; cursor: pointer; padding: 5px 12px; transition: 0.3s; letter-spacing: 2px; }
         .nav-item.active { color: var(--gold); border-bottom: 2px solid var(--gold); font-weight: bold; }
+        
+        .stage { display: flex; gap: 20px; margin-bottom: 30px; height: 160px; }
+        .flag-box { width: 90px; height: 150px; background: rgba(20, 20, 20, 0.95); border-radius: 4px; border: 1px solid #222; transition: 0.6s cubic-bezier(0.2, 1, 0.3, 1); }
+        .flag-box.glow { box-shadow: 0 0 40px currentColor; border: none; }
+        .shuffling { animation: flash 0.12s infinite; }
+        @keyframes flash { 0% { background: #2563eb; } 25% { background: #fff; } 50% { background: #dc2626; } 75% { background: #10b981; } 100% { background: #fbbf24; } }
+        
+        .btn-draw { width: 90px; height: 90px; background: var(--gold); color: #000; border: none; font-size: 1.15rem; font-weight: bold; border-radius: 50%; cursor: pointer; box-shadow: 0 0 25px rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .btn-draw:active { transform: scale(0.9); }
+        
+        .result-panel { margin-top: 25px; width: 90%; max-width: 480px; background: rgba(15, 15, 15, 0.96); padding: 22px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; opacity: 0; visibility: hidden; transform: translateY(15px); transition: 0.5s ease; overflow-y: auto; max-height: 35vh; -webkit-overflow-scrolling: touch; }
+        .result-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .result-panel::-webkit-scrollbar { width: 4px; }
+        .result-panel::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        
+        .res-head { color: var(--gold); font-size: 1.15rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: baseline; }
+        .res-grade { font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: 2px; }
+        .res-body { line-height: 1.8; font-size: 0.95rem; color: #ccc; white-space: pre-line; }
 
-        .stage { display: flex; gap: 30px; margin-bottom: 40px; height: 170px; z-index: 10; }
-        .flag-box {
-            width: 100px; height: 165px; background: rgba(20, 20, 20, 0.9);
-            border-radius: 3px; border: 1px solid #333; transition: 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-        }
-        .flag-box.glow { box-shadow: 0 0 45px currentColor; border: none; }
-        .shuffling { animation: flash 0.1s infinite; }
-
-        @keyframes flash {
-            0% { background: var(--blue); } 25% { background: var(--white); }
-            50% { background: var(--red); } 75% { background: var(--green); } 100% { background: var(--yellow); }
-        }
-
-        /* 圆形按钮 */
-        .btn-draw {
-            width: 90px; height: 90px;
-            background: var(--gold); color: #000; border: none;
-            font-size: 1.1rem; font-weight: bold;
-            border-radius: 50%; cursor: pointer; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            letter-spacing: 2px;
+        /* 底部声明 */
+        .footer {
+            position: absolute;
+            bottom: 15px;
+            width: 90%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
             z-index: 10;
-            box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
-            display: flex; align-items: center; justify-content: center;
-            padding: 0;
+            pointer-events: none;
+            line-height: 1.5;
         }
-        .btn-draw:hover { transform: scale(1.1); box-shadow: 0 0 35px rgba(197, 160, 89, 0.7); }
-        .btn-draw:active { transform: scale(0.95); }
-        .btn-draw:disabled { background: #222; color: #444; box-shadow: none; cursor: default; }
-
-        .result-panel {
-            margin-top: 30px; width: 90%; max-width: 500px;
-            background: var(--card-bg); padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px);
-            opacity: 0; transform: translateY(15px); transition: 0.6s;
-            visibility: hidden; text-align: left; z-index: 10;
-            overflow-y: auto; max-height: 40vh;
-        }
-        .result-panel.active { opacity: 1; transform: translateY(0); visibility: visible; }
-
-        .res-head { color: var(--gold); font-size: 1.3rem; margin-bottom: 12px; border-bottom: 1px solid #222; padding-bottom: 8px; font-weight: bold; }
-        .res-grade { font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: 3px; }
-        .res-meta { font-size: 0.85rem; color: #777; line-height: 1.5; margin-bottom: 15px; white-space: pre-line; }
-        .res-body { line-height: 1.8; font-size: 1rem; color: #bbb; }
-        .label-title { color: var(--gold); font-weight: bold; margin-top: 15px; display: block; font-size: 0.9rem; letter-spacing: 1px; }
-        .combo-text { font-size: 1.15rem; line-height: 1.8; color: #eee; border-top: 1px solid #222; padding-top: 15px; }
     </style>
 </head>
 <body>
-
     <canvas id="stars-canvas"></canvas>
-    <h1>五方旗</h1>
-
-    <div class="nav">
-        <button id="tab-single" class="nav-item active" onclick="setMode('single')">单抽</button>
-        <button id="tab-double" class="nav-item" onclick="setMode('double')">双抽</button>
+    
+    <div class="ui-wrapper">
+        <h1>赛博神占</h1>
+        <div class="intro-text">默念你的问题，摇旗得到指引</div>
+        <div class="nav">
+            <button id="tab-single" class="nav-item active" onclick="setMode('single')">单抽</button>
+            <button id="tab-double" class="nav-item" onclick="setMode('double')">双抽</button>
+        </div>
+        <div class="stage">
+            <div id="f1" class="flag-box"></div>
+            <div id="f2" class="flag-box" style="display: none;"></div>
+        </div>
+        <button id="drawBtn" class="btn-draw" onclick="startDraw()">摇旗</button>
+        <div id="panel" class="result-panel">
+            <div id="resTitle" class="res-head"></div>
+            <div id="resGrade" class="res-grade"></div>
+            <div id="resBody" class="res-body"></div>
+        </div>
     </div>
 
-    <div class="stage">
-        <div id="f1" class="flag-box"></div>
-        <div id="f2" class="flag-box" style="display: none;"></div>
-    </div>
-
-    <button id="drawBtn" class="btn-draw" onclick="startDraw()">摇旗</button>
-
-    <div id="panel" class="result-panel">
-        <div id="resTitle" class="res-head"></div>
-        <div id="resGrade" class="res-grade"></div>
-        <div id="resMeta" class="res-meta"></div>
-        <div id="resBody" class="res-body"></div>
-    </div>
+    <div class="footer">注意：该网站由LUA基于朝鲜半岛巫俗设计并免费公开。<br>请勿商用、仅供娱乐、请勿迷信。</div>
 
 <script>
-    // 星空全屏逻辑
-    const canvas = document.getElementById('stars-canvas');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
+    var canvas = document.getElementById('stars-canvas'), ctx = canvas.getContext('2d'), stars = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initStars(); }
+    function initStars() { stars = []; var count = Math.floor((canvas.width*canvas.height)/3000); for(var i=0; i<count; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, size:Math.random()*1.8, opacity:Math.random(), speed:0.005+Math.random()*0.015}); }
+    function draw() { ctx.clearRect(0,0,canvas.width,canvas.height); stars.forEach(function(s){ ctx.fillStyle="rgba(255,255,255,"+s.opacity+")"; ctx.beginPath(); ctx.arc(s.x,s.y,s.size,0,Math.PI*2); ctx.fill(); s.opacity+=s.speed; if(s.opacity>1||s.opacity<0) s.speed=-s.speed; }); requestAnimationFrame(draw); }
+    window.addEventListener('resize', resize); resize(); draw();
 
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        initStars();
-    }
-
-    function initStars() {
-        stars = [];
-        const count = Math.floor((canvas.width * canvas.height) / 3000); // 根据面积动态计算数量
-        for (let i = 0; i < count; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 1.5,
-                opacity: Math.random(),
-                speed: 0.005 + Math.random() * 0.01
-            });
-        }
-    }
-
-    function drawStars() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        stars.forEach(s => {
-            ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-            ctx.fill();
-            s.opacity += s.speed;
-            if (s.opacity > 0.9 || s.opacity < 0.1) s.speed = -s.speed;
-        });
-        requestAnimationFrame(drawStars);
-    }
-
-    window.addEventListener('resize', resize);
-    resize();
-    drawStars();
-
-    const FLAG_DB = {
-        blue: { 
-            name: '青 / 蓝旗', title: '东方青帝神将', 
-            meta: '灵体：青龙、将军神、神将、龙王、年轻男神\n方位：东方 | 数字：3, 8 | 五行：木',
-            pos: '考试合格、合同成功、文书运好、就业成功、事业扩张、宅基大监、福大监、将军神在前相助。', 
-            neg: '官司、口舌、是非、意外、厄运、受阻。',
-            color: '#2563eb' 
-        },
-        white: { 
-            name: '白旗', title: '西方白帝神将', 
-            meta: '灵体：白虎、七星、四神、帝释、天神、祖先神\n方位：西方 | 数字：4, 9 | 五行：金',
-            pos: '神助、祖先帮助、清净、纯明。郁结之事借神之愿力被引导、化解。', 
-            color: '#ffffff' 
-        },
-        red: { 
-            name: '红旗', title: '南方赤帝神将', 
-            meta: '灵体：朱雀、山神\n方位：南方 | 数字：2, 7 | 五行：火',
-            pos: '心愿达成、好运、金钱、吉利、万事亨通。被视为最好的旗。', 
-            color: '#dc2626' 
-        },
-        green: { 
-            name: '浅绿色旗', title: '北方黑帝神将', 
-            meta: '灵体：玄武、城隍神、童子灵、亡祖、水鬼、年轻女神\n方位：北方 | 数字：1, 6 | 五行：水',
-            neg: '厄运、疾病、丧门、不净、失败、离别、极度压抑之境。通常表示有不吉之气进入。', 
-            color: '#10b981' 
-        },
-        yellow: { 
-            name: '黄旗', title: '中央黄帝神将', 
-            meta: '灵体：黄龙、大母神、奶奶神、祖先神\n方位：中央 | 数字：5, 10 | 五行：土',
-            pos: '金钱、买卖成交、根基、祖先相助、供奉祖先可化为财运、神兴之气。',
-            neg: '祖先阻挡、祖先事宜、纷乱之象。',
-            color: '#fbbf24' 
-        }
+    var mode = 'single', keys = ['blue','white','red','green','yellow'];
+    
+    // 全新单旗资料库
+    var FLAG_DB = {
+        blue: { name:'蓝旗', grade:'次凶', title:'东方青帝神将之旗', body:'代表灵体：青龙、将军神、神将、大监、龙王、年轻男神\n方位：东方 | 数字：3、8 | 五行：木\n\n【含义】\n在考试、合同、文书、事业、宅基类问题中为吉。\n在其他问题中不吉，可再占一次确认。', color:'#2563eb' },
+        white: { name:'白旗', grade:'次吉', title:'西方白帝神将之旗', body:'代表灵体：白虎、七星、四神、帝释、天神、祖先神\n方位：西方 | 数字：4、9 | 五行：金\n\n【含义】\n天神帮助、清净、纯明。\n有相关信仰者建议向神发愿，让问题化解；若已经得助，可感恩神明。', color:'#fff' },
+        red: { name:'红旗', grade:'吉', title:'南方赤帝神将之旗', body:'代表灵体：朱雀、山神\n方位：南方 | 数字：2、7 | 五行：火\n\n【含义】\n心愿达成、好运、金钱、吉利、万事亨通。\n但若过于频繁抽到，说明不要心急，并防范血光和火灾问题。', color:'#dc2626' },
+        green: { name:'绿旗', grade:'凶', title:'北方黑帝神将之旗', body:'代表灵体：玄武、城隍神、童子灵、年轻亡灵、虚主、杂神、亡祖、水鬼、年轻女神\n方位：北方 | 数字：1、6 | 五行：水\n\n【含义】\n厄运、疾病、丧门、不净、失败、离别、落选、丧事、极度压抑之境。', color:'#10b981' },
+        yellow: { name:'黄旗', grade:'中', title:'中央黄帝神将之旗', body:'代表灵体：黄龙、大母神、奶奶神、祖先神\n方位：中央 | 数字：5、10 | 五行：土\n\n【含义】\n金钱、买卖方面为吉。\n在祖先方面，若祖先事宜处理妥当则吉，处理存在问题则可能带来是非和阻碍。', color:'#fbbf24' }
     };
 
-    const COMBO_DB = {
-        'red-red': ['大吉', '好运爆发，心愿极速推进 / 忌焦躁，顺势而为'],
-        'red-white': ['上吉', '神力加持，万事顺遂 / 必成之象，清净圆满'],
-        'red-yellow': ['上吉', '祖先助运，财源提升 / 适合求财、求事业'],
-        'blue-red': ['中吉', '功名利禄，事业良机 / 适合文书、签约、升职'],
-        'green-red': ['中', '好运带阻，干扰潜伏 / 稳扎稳打，防患未然'],
-        'white-white': ['平吉', '强力护佑，清净安稳 / 适合祈福、化解纠纷'],
-        'white-yellow': ['中吉', '家族福荫，根基稳固 / 适合求安稳、处理家事'],
-        'blue-white': ['中吉', '变动顺遂，贵人指引 / 适合迁移、调动、远行'],
-        'green-white': ['中', '险中有救，神明保后 / 宜守不宜攻，待时而动'],
-        'yellow-yellow': ['中吉', '根基深厚，祖先关照 / 财运稳健，利于买卖'],
-        'blue-yellow': ['中', '事业损益与家族相关 / 详察合同文书，谨防干扰'],
-        'green-yellow': ['凶', '根基受损，气场混杂 / 需处理健康问题与家族矛盾'],
-        'blue-blue': ['中吉', '事业极强，文书事显 / 专注当下，成败在于细节'],
-        'blue-green': ['凶', '事业受阻，是非缠身 / 防范口舌官非，暂缓合同'],
-        'green-green': ['大凶', '极度低迷，气场受损 / 忌一切重大决策']
+    // 全新异色双旗资料库（共10种组合）
+    var COMBO_DB = { 
+        'red-white': ['大吉', '运势极佳 / 想说出口的话是对的 / 神灵赐福'],
+        'red-yellow': ['吉', '财运亨通 / 祖先相助'],
+        'blue-red': ['吉', '把握学习、事业、合同、文书之事的好机会'],
+        'green-red': ['中', '事情有所阻碍和延迟但终究能处理完 / 需要注意西南方位'],
+        'white-yellow': ['吉', '有神的气息或痕迹出现'],
+        'blue-white': ['中', '有移动、变动的迹象'],
+        'green-white': ['凶', '被神惩罚 / 受神所阻'],
+        'blue-yellow': ['凶', '运势有阻 / 注意金钱问题'],
+        'green-yellow': ['凶', '注意祖先事宜 / 阻滞、郁闷、烦恼、矛盾'],
+        'blue-green': ['大凶', '四方受阻，诸事难成']
     };
 
-    let mode = 'single';
-    const keys = ['blue', 'white', 'red', 'green', 'yellow'];
-
-    function setMode(m) {
-        mode = m;
-        document.getElementById('tab-single').classList.toggle('active', m === 'single');
-        document.getElementById('tab-double').classList.toggle('active', m === 'double');
-        document.getElementById('f2').style.display = (m === 'double') ? 'flex' : 'none';
-        resetUI();
-    }
-
-    function resetUI() {
-        document.getElementById('panel').classList.remove('active');
-        document.querySelectorAll('.flag-box').forEach(el => {
-            el.className = 'flag-box';
-            el.style.cssText = (el.id === 'f2' && mode === 'single') ? 'display:none' : '';
-        });
-    }
-
+    function setMode(m) { mode = m; document.getElementById('tab-single').className = 'nav-item '+(m=='single'?'active':''); document.getElementById('tab-double').className = 'nav-item '+(m=='double'?'active':''); document.getElementById('f2').style.display = (m=='double'?'block':'none'); resetUI(); }
+    function resetUI() { document.getElementById('panel').className = 'result-panel'; document.getElementById('f1').className = 'flag-box'; document.getElementById('f2').className = 'flag-box'; }
+    
     function startDraw() {
-        resetUI();
-        const btn = document.getElementById('drawBtn');
-        btn.disabled = true;
-        const f1 = document.getElementById('f1');
-        const f2 = document.getElementById('f2');
-        f1.className = 'flag-box shuffling';
-        if(mode === 'double') f2.className = 'flag-box shuffling';
-
-        setTimeout(() => {
-            const r1 = keys[Math.floor(Math.random()*5)];
-            applyStyle(f1, r1);
-            if(mode === 'double') {
-                setTimeout(() => {
-                    const r2 = keys[Math.floor(Math.random()*5)];
-                    applyStyle(f2, r2);
-                    render(r1, r2);
+        var btn = document.getElementById('drawBtn'); btn.disabled = true; resetUI();
+        document.getElementById('f1').className = 'flag-box shuffling';
+        if(mode=='double') document.getElementById('f2').className = 'flag-box shuffling';
+        
+        setTimeout(function(){
+            // 抽取第一面旗
+            var r1 = keys[Math.floor(Math.random()*5)];
+            apply('f1', r1);
+            
+            if(mode=='double') {
+                setTimeout(function(){
+                    // 逻辑修改：强制抽取第二面不同颜色的旗
+                    var r2 = keys[Math.floor(Math.random()*5)];
+                    while(r2 === r1) {
+                        r2 = keys[Math.floor(Math.random()*5)];
+                    }
+                    apply('f2', r2); 
+                    render(r1, r2); 
                     btn.disabled = false;
                 }, 400);
-            } else {
-                render(r1);
-                btn.disabled = false;
+            } else { 
+                render(r1); 
+                btn.disabled = false; 
             }
         }, 1000);
     }
-
-    function applyStyle(el, key) {
-        const color = FLAG_DB[key].color;
-        el.className = 'flag-box glow';
-        el.style.backgroundColor = color;
-        el.style.color = color;
-        if(key === 'white') el.style.border = '1px solid #444';
-    }
-
+    
+    function apply(id, k) { var el = document.getElementById(id); el.className = 'flag-box glow'; el.style.backgroundColor = FLAG_DB[k].color; el.style.color = FLAG_DB[k].color; if(k=='white') el.style.border='1px solid #666'; }
+    
     function render(r1, r2) {
-        const title = document.getElementById('resTitle');
-        const grade = document.getElementById('resGrade');
-        const meta = document.getElementById('resMeta');
-        const body = document.getElementById('resBody');
-        const panel = document.getElementById('panel');
-
-        if (!r2) {
-            const d = FLAG_DB[r1];
-            title.innerText = d.name;
-            grade.innerText = d.title;
-            meta.innerText = d.meta;
-            let html = "";
-            if (d.pos) html += `<span class="label-title">正面含义</span>${d.pos}`;
-            if (d.neg) html += `<span class="label-title">负面含义</span>${d.neg}`;
-            body.innerHTML = html;
-        } else {
-            const comboKey = [r1, r2].sort().join('-');
-            const data = COMBO_DB[comboKey];
-            title.innerText = "双旗解读";
-            grade.innerText = data[0];
-            meta.innerText = "";
-            body.innerHTML = `<div class="combo-text">${data[1]}</div>`;
+        var t = document.getElementById('resTitle'), g = document.getElementById('resGrade'), b = document.getElementById('resBody');
+        if(!r2) { 
+            var d = FLAG_DB[r1]; 
+            // 单抽标题：颜色与吉凶并列
+            t.innerHTML = `<span>${d.name}</span> <span style="font-size:1rem; opacity:0.8;">[ ${d.grade} ]</span>`; 
+            g.innerText = d.title; 
+            b.innerText = d.body; 
+        } else { 
+            var k = [r1,r2].sort().join('-'); 
+            var res = COMBO_DB[k]; 
+            t.innerText = "双旗指引"; 
+            g.innerText = res[0]; 
+            b.innerText = res[1]; 
         }
-        panel.classList.add('active');
+        document.getElementById('panel').className = 'result-panel active';
     }
 </script>
 </body>
-
 </html>
